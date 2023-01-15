@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('todos', function (Blueprint $table) {
             $table->id();
             $table->text('content');
-            $table->dateTime('completed_at');
+            $table->dateTime('completed_at')->nullable();
             $table->foreignId('user_id')->constrained('users');
             $table->timestamps();
         });
