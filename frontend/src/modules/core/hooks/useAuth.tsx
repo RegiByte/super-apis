@@ -3,6 +3,7 @@ import { useSwr } from "./useSwr";
 import axios from "axios";
 import { apiClient } from "../../../services/http";
 import { useEffect } from "react";
+import { User } from "../../entities/user";
 
 interface UseAuthParams {
   middleware: "guest" | "auth";
@@ -23,7 +24,7 @@ interface LoginParams {
 }
 
 interface UseAuthHook {
-  user?: Record<string, any>;
+  user?: User;
   register: (params: RegisterParams) => Promise<void>;
   login: (params: LoginParams) => Promise<void>;
   logout: () => Promise<void>;
@@ -36,12 +37,12 @@ export const useAuth = ({ middleware, redirectIfAuthenticated }: UseAuthParams):
     data: user,
     error,
     mutate,
-  } = useSwr(
+  } = useSwr<User | undefined>(
     "/api/user",
     () =>
       apiClient
         .get("/api/user")
-        .then((res) => res.data)
+        .then((res) => res.data as User)
         .catch((error) => {
           throw error;
         }),
@@ -88,7 +89,7 @@ export const useAuth = ({ middleware, redirectIfAuthenticated }: UseAuthParams):
 
   const logout: UseAuthHook["logout"] = async () => {
     if (!error) {
-      await apiClient.post("/logout").then(() => mutate(null));
+      await apiClient.post("/logout").then(() => mutate(undefined));
     }
 
     navigate("/");

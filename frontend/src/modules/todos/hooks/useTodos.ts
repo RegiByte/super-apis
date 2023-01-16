@@ -10,6 +10,7 @@ interface UseTodosHook {
   mutate: SWRResponse<PaginatedTodos, AxiosError>["mutate"];
   addTodo: (content: string) => Promise<void>;
   completeTodo: (todoId: string) => Promise<void>;
+  uncompleteTodo: (todoId: string) => Promise<void>;
   deleteTodo: (todoId: string) => Promise<void>;
 }
 
@@ -48,6 +49,17 @@ export function useTodos(): UseTodosHook {
       });
   };
 
+  const uncompleteTodo = async (todoId: string) => {
+    await apiClient
+      .put(`/api/todos/${todoId}`, {
+        completed_at: null,
+      })
+      .then(() => mutate())
+      .catch((error) => {
+        throw error;
+      });
+  };
+
   const deleteTodo = async (todoId: string) => {
     await apiClient
       .delete(`/api/todos/${todoId}`)
@@ -63,6 +75,7 @@ export function useTodos(): UseTodosHook {
     mutate,
     addTodo,
     completeTodo,
+    uncompleteTodo,
     deleteTodo,
   };
 }

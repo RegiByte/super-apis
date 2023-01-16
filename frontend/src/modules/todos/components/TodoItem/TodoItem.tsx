@@ -8,24 +8,33 @@ interface TodoItemProps {
 }
 
 export const TodoItem: React.FC<TodoItemProps> = ({ todo }) => {
-  const { completeTodo, deleteTodo } = useTodos();
+  const { completeTodo, uncompleteTodo, deleteTodo } = useTodos();
 
   return (
     <div className="flex mb-4 items-center">
-      <p className={classNames("w-full text-grey-darkest", todo.completed_at ? "text-green-400 line-through" : null)}>
+      <p className={classNames("w-full text-grey-darkest", todo.completed_at ? "text-green-500 line-through" : null)}>
         {todo.content}
       </p>
-      <button
-        onClick={() => completeTodo(todo.id)}
-        className="flex-no-shrink p-2 ml-4 mr-2 border-2 rounded hover:text-white text-green border-green hover:bg-green-400"
-      >
-        Done
-      </button>
+      {todo.completed_at ? (
+        <button
+          onClick={() => uncompleteTodo(todo.id)}
+          className="flex-no-shrink p-2 ml-4 mr-2 border-2 rounded hover:text-white text-teal-500 border-green hover:bg-teal-400"
+        >
+          Restaurar
+        </button>
+      ) : (
+        <button
+          onClick={() => completeTodo(todo.id)}
+          className="flex-no-shrink p-2 ml-4 mr-2 border-2 rounded hover:text-white text-green-500 border-green hover:bg-green-400"
+        >
+          Concluir
+        </button>
+      )}
       <button
         onClick={() => deleteTodo(todo.id)}
-        className="flex-no-shrink p-2 ml-2 border-2 rounded text-red border-red hover:text-white hover:bg-red-400"
+        className="flex-no-shrink p-2 ml-2 border-2 rounded text-red-500 border-red hover:text-white hover:bg-red-400"
       >
-        Remove
+        Remover
       </button>
     </div>
   );
