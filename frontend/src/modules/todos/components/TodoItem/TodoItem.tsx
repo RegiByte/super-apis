@@ -1,14 +1,18 @@
 import React from "react";
 import { Todo } from "../../../entities/todo";
-import { useTodos } from "../../hooks/useTodos";
+import { useTodos, UseTodosHook } from "../../hooks/useTodos";
 import { classNames } from "../../../../helpers/layout";
 
 interface TodoItemProps {
   todo: Todo;
+  completeTodo: UseTodosHook['completeTodo']
+  uncompleteTodo: UseTodosHook['uncompleteTodo']
+
+  deleteTodo: UseTodosHook['deleteTodo']
 }
 
-export const TodoItem: React.FC<TodoItemProps> = ({ todo }) => {
-  const { completeTodo, uncompleteTodo, deleteTodo } = useTodos();
+export const TodoItem: React.FC<TodoItemProps> = ({ todo,completeTodo, uncompleteTodo, deleteTodo  }) => {
+
 
   return (
     <div className="flex mb-4 items-center">

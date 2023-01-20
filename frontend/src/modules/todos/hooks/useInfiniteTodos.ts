@@ -1,34 +1,41 @@
-import { useSwr } from "../../core/hooks/useSwr";
+import { useSwrInfinite } from "../../core/hooks/useSwr";
 import { apiClient } from "../../../services/http";
 import { SWRResponse } from "swr";
 import { AxiosError } from "axios";
-import { PaginatedTodos } from "../../entities/todo";
+import { PaginatedTodos, Todo } from "../../entities/todo";
+import { useMemo } from "react";
 
-export interface UseTodosHook {
-  todos?: PaginatedTodos;
+export interface UseInfiniteTodosHook {
+  todos?: Todo[];
   isLoading: boolean;
-  mutate: SWRResponse<PaginatedTodos, AxiosError>["mutate"];
+  mutate: SWRResponse<PaginatedTodos[], AxiosError>["mutate"];
   addTodo: (content: string) => Promise<void>;
   completeTodo: (todoId: string) => Promise<void>;
   uncompleteTodo: (todoId: string) => Promise<void>;
   deleteTodo: (todoId: string) => Promise<void>;
+  size: number;
+  setSize: (size: number | ((_size: number) => number)) => Promise<any>;
 }
 
-interface UseTodosParams {
-  page?: number
-
+interface UseInfiniteTodosParams {
+  page?: number;
 }
 
-export function useTodos({page = 1 }: UseTodosParams = {}): UseTodosHook {
-  const {
-    data: todos,
-    isLoading,
-    mutate,
-  } = useSwr<PaginatedTodos>(`/api/todos/?page=${page}`, () =>
-    apiClient.get(`/api/todos/?page=${page}`).then((response) => {
+function getTodosKey(pageIndex: number, previousPageData: PaginatedTodos) {
+  if (previousPageData && !previousPageData.next_page_url) return null;
+  return `/api/todos/?page=${pageIndex + 1}`;
+}
+
+export function useInfiniteTodos(): UseInfiniteTodosHook {
+  const { data, isLoading, mutate, setSize, size } = useSwrInfinite<PaginatedTodos>(getTodosKey, (pageUrl: string) => {
+    return apiClient.get(pageUrl).then((response) => {
       return response.data;
-    }),
-  );
+    });
+  });
+
+  const todos = useMemo(() => {
+    return data?.map((response) => response.data)?.flat();
+  }, [data]);
 
   const addTodo = async (content: string) => {
     await apiClient
@@ -82,5 +89,7 @@ export function useTodos({page = 1 }: UseTodosParams = {}): UseTodosHook {
     completeTodo,
     uncompleteTodo,
     deleteTodo,
+    size,
+    setSize,
   };
 }
