@@ -1,9 +1,10 @@
 import React from "react";
 import { useForm } from "react-hook-form";
-import { useTodos } from "../../hooks/useTodos";
-
-export const AddTodoForm = () => {
-  const { addTodo } = useTodos();
+import { useTodos, UseTodosHook } from "../../hooks/useTodos";
+interface AddTodoFormProps {
+  addTodo: UseTodosHook['addTodo']
+}
+export const AddTodoForm:React.FC<AddTodoFormProps> = ({addTodo}) => {
   const {
     register,
     formState: { errors },
@@ -28,7 +29,7 @@ export const AddTodoForm = () => {
           placeholder="O que precisa ser feito?"
           {...register("content")}
         />
-        <button type="submit" className="flex-no-shrink p-2 border-2 rounded text-teal border-teal hover:text-white hover:bg-teal">
+        <button type="submit" className="flex-no-shrink p-2 border-2 rounded text-teal border-teal hover:text-sky-500 hover:bg-teal">
           Adicionar
         </button>
       </div>
