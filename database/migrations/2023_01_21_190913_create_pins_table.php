@@ -15,6 +15,11 @@ return new class extends Migration
     {
         Schema::create('pins', function (Blueprint $table) {
             $table->id();
+            $table->string('title', 120);
+            $table->text('destination');
+            $table->text('image')->nullable();
+            $table->foreignId('category_id')->constrained('pin_categories');
+            $table->foreignId('posted_by')->constrained('users');
             $table->timestamps();
         });
     }
